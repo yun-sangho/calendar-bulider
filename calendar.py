@@ -5,23 +5,25 @@ import copy
 from utils import print_schedule
 from templates import templates
 
-def select_template(template_list):
+def select_template(templates):
+    template_list = [key for key in templates]
+
     print(f'\nThese are templates you can use: {template_list}\n')
     
     text = input('Type a template you want to use: ')
 
     if text not in template_list:
         print(f'\nThere is not `{text}` templae\n\nPlease run again!\n')
-        sys.exit()
+        sys.exit(1)
     
     check = input(f'\nDo you want to use `{text}`? y/n : ')
     
     if check == 'y' :
         print(f'\nUsing `{text}` template...\n')
-        template = templates.templates[text]
+        template = templates[text]
         return template
     else :
-        return select_template(template_list)
+        return select_template(templates)
 
 def submit_schedule(template):
     schedule = copy.deepcopy(template)
@@ -54,7 +56,3 @@ def submit_schedule(template):
         return schedule
     else :
         return submit_schedule(template)
-
-template_list = [key for key in templates.templates]
-template = select_template(template_list)
-schedule = submit_schedule(template)
