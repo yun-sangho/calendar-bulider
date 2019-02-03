@@ -1,33 +1,46 @@
 import unittest
+import os
 from unittest.mock import patch
 
-from calendar import select_template, submit_schedule
+from calendar import select_template, submit_schedule, write_new_calendar
 
 class CalendarTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.templates = {
-            'template1' : {
-                "week1": ['day1', 'day2', 'day3'],
+        self.templates = [
+            {
+                "name": "template1",
+                "schedule" : {
+                    "week1": ['day1', 'day2', 'day3']
+                }
             },
-            'template2' : {
-                "week1": ['day1', 'day2', 'day3', 'day4', 'day5']
+            {
+                "name": "template2",
+                "schedule" : {
+                    "week1": ['day1', 'day2', 'day3']
+                }
             }
-        }
+        ]
 
         self.template = {
-            "week1": ['day1', 'day2', 'day3']
+            "name": "test",
+            "schedule" : {
+                "week1": ['day1', 'day2', 'day3']
+            }
         }
     
     def test_user_selecte_template_on_a_template_list(self):
         
         user_input = [
-            'template1',
+            '1',
             'y'
         ]
 
         expected_output = {
-            "week1": ['day1', 'day2', 'day3'],
+            "name": "template1",
+            "schedule" : {
+                "week1": ['day1', 'day2', 'day3']
+            }
         }
 
         with patch('builtins.input', side_effect=user_input):
@@ -37,7 +50,7 @@ class CalendarTestCase(unittest.TestCase):
     def test_user_selecte_template_does_not_exist_on_the_list(self):
         
         user_input = [
-            'none',
+            '0',
         ]
 
         with patch('builtins.input', side_effect=user_input):
@@ -58,7 +71,10 @@ class CalendarTestCase(unittest.TestCase):
         ]
 
         expected_output = {
-            "week1": ['20190201', '20190202', '20190203'],
+            "name": "test",
+            "schedule": {
+                "week1": ['20190201', '20190202', '20190203']
+            }
         }
 
         with patch('builtins.input', side_effect=user_input):
@@ -77,7 +93,10 @@ class CalendarTestCase(unittest.TestCase):
         ]
 
         expected_output = {
-            "week1": ['20190228', '20190301', '20190302'],
+            "name": "test",
+            "schedule": {
+                "week1": ['20190228', '20190301', '20190302']
+            }
         }
 
         with patch('builtins.input', side_effect=user_input):
@@ -96,12 +115,27 @@ class CalendarTestCase(unittest.TestCase):
         ]
 
         expected_output = {
-            "week1": ['20191231', '20200101', '20200102'],
+            "name": "test",
+            "schedule": {
+                "week1": ['20191231', '20200101', '20200102']
+            }
         }
 
         with patch('builtins.input', side_effect=user_input):
             schedule = submit_schedule(self.template)
         self.assertEqual(schedule, expected_output)
+
+    def test_create_correct_new_calendar_in_output_folder(self):
+        schedule = {
+            "name": "test",
+            "schedule": {
+                "week1": ['20190201', '20190202', '20190203']
+            }
+        }
+        
+        write_new_calendar(schedule)
+        
+        self.assertTrue(os.path.exists(f'./output/{schedule["name"]}'))
 
 if __name__ == '__main__':
     unittest.main()

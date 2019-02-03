@@ -2,31 +2,32 @@ import os
 import sys
 import datetime
 import copy
-from utils import print_schedule
+import re
+from utils import get_names_from_templates, print_schedule
 from templates import templates
 
 def select_template(templates):
-    template_list = [key for key in templates]
 
-    print(f'\nThese are templates you can use: {template_list}\n')
+    names = get_names_from_templates(templates)
     
-    text = input('Type a template you want to use: ')
+    num = int(input('Type a number of template that you want to use: '))
 
-    if text not in template_list:
-        print(f'\nThere is not `{text}` templae\n\nPlease run again!\n')
+    if num - 1 not in range(len(names)):
+        print(f'\nThere is not `{num}: {names[num - 1]}` templae\n\nPlease run again!\n')
         sys.exit(1)
     
-    check = input(f'\nDo you want to use `{text}`? y/n : ')
+    check = input(f'\nDo you want to use `{num}: {names[num - 1]}`? y/n : ')
     
     if check == 'y' :
-        print(f'\nUsing `{text}` template...\n')
-        template = templates[text]
+        print(f'\nUsing `{num}` template...\n')
+        template = templates[num - 1]
         return template
     else :
         return select_template(templates)
 
 def submit_schedule(template):
-    schedule = copy.deepcopy(template)
+    temp = copy.deepcopy(template)
+    schedule = temp["schedule"]
     year = int(input('Put the year: '))
     month = int(input('Put the month: '))
     temp_day = 0
@@ -47,12 +48,40 @@ def submit_schedule(template):
             temp_day = day
     
     print('\nYour schedule is:\n')
-    print_schedule(schedule)
+    print_schedule(temp)
 
     check = input(f'\nDo you want to use this schedule? y/n : ')
     
     if check == 'y' :
         print('Using the schedule...\n')
-        return schedule
+        return temp
     else :
         return submit_schedule(template)
+
+def write_new_calendar(schedule):
+    PATH_TO_TEMPALTE = f'{os.getcwd()}/templates/{schedule["name"]}'
+    PATH_TO_OUTPUT = f'{os.getcwd()}/output/{schedule["name"]}'
+    
+    if not os.path.exists(PATH_TO_OUTPUT):
+        os.mkdir(PATH_TO_OUTPUT)
+    
+    for week, days in schedule["schedule"].items():
+        print(f'\nStart writing, {week}...\n')
+        
+        with open(f'{PATH_TO_TEMPALTE}/{week}.ics', "r") as f:
+            with open(f'{PATH_TO_OUTPUT}/{week}.ics', "w+") as o:
+                for line in f:
+                    if re.search(r'%DAY\d+%', line) is not None:
+                        for i in range(len(days)):
+                            text_to_search = f'%DAY{i + 1}%'
+                            if text_to_search in line:
+                                o.write(line.replace(text_to_search, days[i]))
+                                break
+                    elif 'PRODID' in line:
+                        date = datetime.datetime.now().strftime("%Y%m%d")
+                        temp_line = line.replace('\n', '')
+                        o.write(f'{temp_line} {date}\n')
+                    elif "*****" not in line:
+                        o.write(line)     
+        o.close()
+        f.close()
