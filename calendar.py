@@ -52,7 +52,7 @@ def submit_schedule(template):
     check = input(f'\nDo you want to use this schedule? y/n : ')
     
     if check == 'y' :
-        print('Using the schedule')
+        print('Using the schedule...\n')
         return schedule
     else :
         return submit_schedule(template)
