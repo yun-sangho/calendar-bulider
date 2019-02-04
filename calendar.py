@@ -59,8 +59,10 @@ def submit_schedule(template):
         return submit_schedule(template)
 
 def write_new_calendar(schedule):
+    date = datetime.datetime.now().strftime("%Y%m%d")
+    
     PATH_TO_TEMPALTE = f'{os.getcwd()}/templates/{schedule["name"]}'
-    PATH_TO_OUTPUT = f'{os.getcwd()}/output/{schedule["name"]}'
+    PATH_TO_OUTPUT = f'{os.getcwd()}/output/{schedule["name"]}-{date}'
     
     if not os.path.exists(PATH_TO_OUTPUT):
         os.mkdir(PATH_TO_OUTPUT)
@@ -78,10 +80,9 @@ def write_new_calendar(schedule):
                                 o.write(line.replace(text_to_search, days[i]))
                                 break
                     elif 'PRODID' in line:
-                        date = datetime.datetime.now().strftime("%Y%m%d")
                         temp_line = line.replace('\n', '')
                         o.write(f'{temp_line} {date}\n')
                     elif "*****" not in line:
-                        o.write(line)     
+                        o.write(line)
         o.close()
         f.close()
