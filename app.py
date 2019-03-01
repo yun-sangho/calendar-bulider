@@ -1,4 +1,8 @@
-from calendar import select_template, submit_schedule, write_new_calendar
+from calendar import (
+    select_template,
+    submit_schedule,
+    write_new_calendar,
+)
 from templates import templates
 
 template = select_template(templates)
