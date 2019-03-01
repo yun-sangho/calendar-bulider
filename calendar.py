@@ -4,16 +4,13 @@ import datetime
 import copy
 import re
 from utils import get_names_from_templates, print_schedule
-from templates import templates
 
 
 def select_template(templates):
 
     names = get_names_from_templates(templates)
 
-    num = int(
-        input("Type a number of template that you want to use: ")
-    )
+    num = int(input("Type a number of template that you want to use: "))
 
     if num - 1 not in range(len(names)):
         print(
@@ -21,9 +18,7 @@ def select_template(templates):
         )
         sys.exit(1)
 
-    check = input(
-        f"\nDo you want to use `{num}: {names[num - 1]}`? y/n : "
-    )
+    check = input(f"\nDo you want to use `{num}: {names[num - 1]}`? y/n : ")
 
     if check == "y":
         print(f"\nUsing `{num}` template...\n")
@@ -51,9 +46,7 @@ def submit_schedule(template):
                     year += 1
                     month = 1
 
-            date = datetime.datetime(year, month, day).strftime(
-                "%Y%m%d"
-            )
+            date = datetime.datetime(year, month, day).strftime("%Y%m%d")
             schedule[week][i] = date
             temp_day = day
 
@@ -88,11 +81,7 @@ def write_new_calendar(schedule):
                         for i in range(len(days)):
                             text_to_search = f"%DAY{i + 1}%"
                             if text_to_search in line:
-                                o.write(
-                                    line.replace(
-                                        text_to_search, days[i]
-                                    )
-                                )
+                                o.write(line.replace(text_to_search, days[i]))
                                 break
                     elif "PRODID" in line:
                         temp_line = line.replace("\n", "")

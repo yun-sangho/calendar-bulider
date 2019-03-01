@@ -14,4 +14,3 @@ def print_schedule(template):
 
     for week, days in template["schedule"].items():
         print(f"`{week}`: {days}")
-
